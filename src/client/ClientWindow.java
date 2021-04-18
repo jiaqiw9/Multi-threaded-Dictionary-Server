@@ -1,6 +1,7 @@
 package client;
 
 import java.awt.EventQueue;
+import java.awt.GridBagLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -9,19 +10,21 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import javax.swing.JScrollPane;
 
 public class ClientWindow {
 
 	private JFrame frame;
-	private Client client = new Client();
-	private ObjectMapper mapper = new ObjectMapper();
+	private JTabbedPane tabbedPane = null;
+	private Client client = null;
+	private ObjectNode inputObjectNode = null;
 
 	/**
 	 * Launch the application.
@@ -33,7 +36,9 @@ public class ClientWindow {
 					ClientWindow window = new ClientWindow();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Dialog",
+					        JOptionPane.ERROR_MESSAGE);
+					System.exit(0);
 				}
 			}
 		});
@@ -42,193 +47,137 @@ public class ClientWindow {
 	/**
 	 * Create the application.
 	 */
-	public ClientWindow() {
-		initialize();
+	public ClientWindow() throws Exception {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		connect();
+	}
+	
+	/**
+	 * Establish connection to server.
+	 */
+	private void connect() {
+		JPanel panelConnect = new JPanel(new GridBagLayout());
+		JPanel panelInfo = new JPanel();
+		frame.getContentPane().add(panelConnect, BorderLayout.CENTER);
+		frame.getContentPane().add(panelInfo, BorderLayout.SOUTH);
+		
+
+		JLabel lblInfo = new JLabel("Please enter IP and port for the dictionary server.");
+		panelInfo.add(lblInfo);
+		
+		JLabel lblIP = new JLabel("IP");
+		panelConnect.add(lblIP);
+		
+		JTextField textFieldIP = new JTextField();
+		panelConnect.add(textFieldIP);
+		textFieldIP.setColumns(10);
+		
+		JLabel lblPort = new JLabel("Port");
+		panelConnect.add(lblPort);
+		
+		JTextField textFieldPort = new JTextField();
+		panelConnect.add(textFieldPort);
+		textFieldPort.setColumns(10);
+		
+		JButton btnConnect = new JButton("Connect");
+		btnConnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					client = new Client(textFieldIP.getText(), Integer.parseInt(textFieldPort.getText()));
+					initialize();
+				} catch(Exception e_) {
+					JOptionPane.showMessageDialog(new JFrame(), e_.getMessage(), "Dialog",
+				        JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		panelConnect.add(btnConnect);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().removeAll();
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-		
-		JPanel panel_Query = new JPanel();
-		tabbedPane.addTab("Query", null, panel_Query, null);
-		panel_Query.setLayout(null);
-		
-		JTextField textFieldWord_Query = new JTextField();
-		textFieldWord_Query.setBounds(16, 26, 130, 26);
-		panel_Query.add(textFieldWord_Query);
-		textFieldWord_Query.setColumns(10);
-		
-		JLabel lblWord_Query = new JLabel("Word");
-		lblWord_Query.setBounds(23, 6, 61, 16);
-		panel_Query.add(lblWord_Query);
-		
-		JLabel lblMeaning_Query = new JLabel("Meaning");
-		lblMeaning_Query.setBounds(26, 64, 61, 16);
-		panel_Query.add(lblMeaning_Query);
-		
-		JTextArea textAreaMeaning_Query = new JTextArea();
-		textAreaMeaning_Query.setBounds(16, 92, 368, 105);
-		textAreaMeaning_Query.setLineWrap(true);
-		panel_Query.add(textAreaMeaning_Query);
-		
-		JLabel lblStatus_Query = new JLabel("Status");
-		lblStatus_Query.setBounds(285, 6, 61, 16);
-		panel_Query.add(lblStatus_Query);
-		
-		JTextField textFieldStatus_Query = new JTextField();
-		textFieldStatus_Query.setBounds(282, 26, 102, 26);
-		panel_Query.add(textFieldStatus_Query);
-		textFieldStatus_Query.setColumns(10);
-		
-		JButton btn_Query = new JButton("Query");
-		btn_Query.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					JsonNode outputJsonNode = client.action("query", textFieldWord_Query.getText(), "");
-					textAreaMeaning_Query.setText(outputJsonNode.get("meaning").asText());
-					textFieldStatus_Query.setText(outputJsonNode.get("status").asText());
-				} catch(Exception ex) {
-					
-				}
-			}
-		});
-		btn_Query.setBounds(158, 26, 67, 29);
-		panel_Query.add(btn_Query);
-		
-		JPanel panel_Add = new JPanel();
-		tabbedPane.addTab("Add", null, panel_Add, null);
-		panel_Add.setLayout(null);
-		
-		JTextField textFieldWord_Add = new JTextField();
-		textFieldWord_Add.setColumns(10);
-		textFieldWord_Add.setBounds(16, 26, 130, 26);
-		panel_Add.add(textFieldWord_Add);
-		
-		JLabel lblWord_Add = new JLabel("Word");
-		lblWord_Add.setBounds(23, 6, 61, 16);
-		panel_Add.add(lblWord_Add);
-		
-		JLabel lblMeaning_Add = new JLabel("Meaning");
-		lblMeaning_Add.setBounds(26, 64, 61, 16);
-		panel_Add.add(lblMeaning_Add);
-		
-		JTextArea textAreaMeaning_Add = new JTextArea();
-		textAreaMeaning_Add.setBounds(16, 92, 368, 105);
-		textAreaMeaning_Add.setLineWrap(true);
-		panel_Add.add(textAreaMeaning_Add);
-		
-		JLabel lblStatus_Add = new JLabel("Status");
-		lblStatus_Add.setBounds(285, 6, 61, 16);
-		panel_Add.add(lblStatus_Add);
-		
-		JTextField textFieldStatus_Add = new JTextField();
-		textFieldStatus_Add.setBounds(282, 26, 102, 26);
-		panel_Add.add(textFieldStatus_Add);
-		textFieldStatus_Add.setColumns(10);
-		
-		JButton btn_Add = new JButton("Add");
-		btn_Add.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					JsonNode outputJsonNode = client.action("add", textFieldWord_Add.getText(), textAreaMeaning_Add.getText());
-					textFieldStatus_Add.setText(outputJsonNode.get("status").asText());
-				} catch(Exception ex) {
-					
-				}
-			}
-		});
-		btn_Add.setBounds(158, 26, 67, 29);
-		panel_Add.add(btn_Add);
-		
-		JPanel panel_Remove = new JPanel();
-		tabbedPane.addTab("Remove", null, panel_Remove, null);
-		panel_Remove.setLayout(null);
-		
-		JTextField textFieldWord_Remove = new JTextField();
-		textFieldWord_Remove.setColumns(10);
-		textFieldWord_Remove.setBounds(16, 26, 130, 26);
-		panel_Remove.add(textFieldWord_Remove);
-		
-		JLabel lblWord_Remove = new JLabel("Word");
-		lblWord_Remove.setBounds(23, 6, 61, 16);
-		panel_Remove.add(lblWord_Remove);
-		
-		JLabel lblStatus_Remove = new JLabel("Status");
-		lblStatus_Remove.setBounds(285, 6, 61, 16);
-		panel_Remove.add(lblStatus_Remove);
-		
-		JTextField textFieldStatus_Remove = new JTextField();
-		textFieldStatus_Remove.setBounds(282, 26, 102, 26);
-		panel_Remove.add(textFieldStatus_Remove);
-		textFieldStatus_Remove.setColumns(10);
-		
-		JButton btn_Remove = new JButton("Remove");
-		btn_Remove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					JsonNode outputJsonNode = client.action("remove", textFieldWord_Remove.getText(), "");
-					textFieldStatus_Remove.setText(outputJsonNode.get("status").asText());
-				} catch(Exception ex) {
-					
-				}
-				
-			}
-		});
-		btn_Remove.setBounds(158, 26, 78, 29);
-		panel_Remove.add(btn_Remove);
-		
-		JPanel panel_Update = new JPanel();
-		tabbedPane.addTab("Update", null, panel_Update, null);
-		panel_Update.setLayout(null);
-		
-		JTextField textFieldWord_Update = new JTextField();
-		textFieldWord_Update.setColumns(10);
-		textFieldWord_Update.setBounds(16, 26, 130, 26);
-		panel_Update.add(textFieldWord_Update);
-		
-		JLabel lblWord_Update = new JLabel("Word");
-		lblWord_Update.setBounds(23, 6, 61, 16);
-		panel_Update.add(lblWord_Update);
-		
-		JLabel lblMeaning_Update = new JLabel("Meaning");
-		lblMeaning_Update.setBounds(26, 64, 61, 16);
-		panel_Update.add(lblMeaning_Update);
-		
-		JTextArea textAreaMeaning_Update = new JTextArea();
-		textAreaMeaning_Update.setBounds(16, 92, 368, 105);
-		textAreaMeaning_Update.setLineWrap(true);
-		panel_Update.add(textAreaMeaning_Update);
-		
-		JLabel lblStatus_Update = new JLabel("Status");
-		lblStatus_Update.setBounds(285, 6, 61, 16);
-		panel_Update.add(lblStatus_Update);
-		
-		JTextField textFieldStatus_Update = new JTextField();
-		textFieldStatus_Update.setBounds(282, 26, 102, 26);
-		panel_Update.add(textFieldStatus_Update);
-		textFieldStatus_Update.setColumns(10);
-		
-		JButton btn_Update = new JButton("Update");
-		btn_Update.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					JsonNode outputJsonNode = client.action("Update", textFieldWord_Update.getText(), textAreaMeaning_Update.getText());
-					textFieldStatus_Update.setText(outputJsonNode.get("status").asText());
-				} catch(Exception ex) {
-					
-				}
-			}
-		});
-		btn_Update.setBounds(158, 26, 88, 29);
-		panel_Update.add(btn_Update);
-	}
 
+		tabbedPane.addTab("Query", new CommandPanel("Query"));
+		tabbedPane.addTab("Add", new CommandPanel("Add"));
+		tabbedPane.addTab("Remove", new CommandPanel("Remove"));
+		tabbedPane.addTab("Update", new CommandPanel("Update"));
+		
+
+		tabbedPane.setForegroundAt(0, Color.BLACK);
+		tabbedPane.setForegroundAt(1, Color.BLACK);
+		tabbedPane.setForegroundAt(2, Color.BLACK);
+		tabbedPane.setForegroundAt(3, Color.BLACK);
+	}
+	
+	private class CommandPanel extends JPanel {
+		private JLabel lblWord;
+		private JTextField textFieldWord;
+		private JLabel lblMeaning;
+		private JScrollPane scrollPaneMeaning;
+		private JTextArea textAreaMeaning;
+		private JLabel lblStatus;
+		private JTextField textFieldStatus;
+		private JButton btnCommand;
+		
+		public CommandPanel(String command) {
+			super();
+			this.setLayout(null);
+			
+			lblWord = new JLabel("Word");
+			lblWord.setBounds(23, 6, 61, 16);
+			this.add(lblWord);
+			
+			textFieldWord = new JTextField();
+			textFieldWord.setBounds(16, 26, 130, 26);
+			this.add(textFieldWord);
+			textFieldWord.setColumns(10);
+			
+			lblMeaning = new JLabel("Meaning");
+			lblMeaning.setBounds(26, 64, 61, 16);
+			this.add(lblMeaning);
+			
+			scrollPaneMeaning = new JScrollPane();
+			scrollPaneMeaning.setBounds(16, 92, 368, 105);
+			this.add(scrollPaneMeaning);
+			
+			textAreaMeaning = new JTextArea();
+			scrollPaneMeaning.setViewportView(textAreaMeaning);
+			textAreaMeaning.setLineWrap(true);
+			
+			lblStatus = new JLabel("Status");
+			lblStatus.setBounds(245, 6, 61, 16);
+			this.add(lblStatus);
+			
+			textFieldStatus = new JTextField();
+			textFieldStatus.setBounds(240, 26, 150, 26);
+			this.add(textFieldStatus);
+			textFieldStatus.setColumns(10);
+			
+			btnCommand = new JButton(command);
+			btnCommand.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						inputObjectNode = client.action(command.toLowerCase(), textFieldWord.getText(), textAreaMeaning.getText());
+						if(command.equals("Query")) {
+							textAreaMeaning.setText(inputObjectNode.get("meaning").asText());
+						}
+						textFieldStatus.setText(inputObjectNode.get("status").asText());
+					} catch(Exception e_) {
+						JOptionPane.showMessageDialog(new JFrame(), e_.getMessage(), "Dialog",
+					        JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			});
+			btnCommand.setBounds(158, 26, 80, 29);
+			this.add(btnCommand);
+		}
+	}
 }
