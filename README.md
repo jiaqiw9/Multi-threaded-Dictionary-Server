@@ -1,9 +1,4 @@
-::: {.center}
-:::
-
-::: {.center}
 **Multi-threaded Dictionary Server**
-:::
 
 # Introduction
 
