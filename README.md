@@ -78,9 +78,9 @@ panel for different functionalities.
 
 # Class Design
 
-![image](report/Multi-threaded\ Dictionary\ Server\ UML\ Class\ Diagram.pdf)
+[Multi-threaded Dictionary Server UML Class Diagram.pdf](https://github.com/jiaqiw9/Multi-threaded-Dictionary-Server/files/6489856/Multi-threaded.Dictionary.Server.UML.Class.Diagram.pdf)
 
-![image](report/Multi-threaded\ Dictionary\ Server\ UML\ Sequence\ Diagram.pdf)
+[Multi-threaded Dictionary Server UML Sequence Diagram.pdf](https://github.com/jiaqiw9/Multi-threaded-Dictionary-Server/files/6489857/Multi-threaded.Dictionary.Server.UML.Sequence.Diagram.pdf)
 
 # Evaluation
 
