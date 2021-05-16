@@ -78,9 +78,9 @@ panel for different functionalities.
 
 # Class Design
 
-![image](report/Multi-threaded Dictionary Server UML Class Diagram.pdf)
+![image](report/Multi-threaded\ Dictionary\ Server\ UML\ Class\ Diagram.pdf)
 
-![image](report/Multi-threaded Dictionary Server UML Sequence Diagram.pdf)
+![image](report/Multi-threaded\ Dictionary\ Server\ UML\ Sequence\ Diagram.pdf)
 
 # Evaluation
 
