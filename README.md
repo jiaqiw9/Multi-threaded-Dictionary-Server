@@ -1,6 +1,6 @@
 # Multi-threaded Dictionary Server
 
-## Introduction
+# Introduction
 
 With the power of internet, nowadays users can have access to services
 anywhere from the world. In this context, a distributed system is
